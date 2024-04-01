@@ -14,18 +14,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PagamentoConfig {
 
+    //Rotea mensagens de acordo com os padrões de roteamento
     @Bean
     public TopicExchange topic() {
         return new TopicExchange("financeiro.topic");
     }
 
+    //Rotea mensagens diretamento para filas especificas
     @Bean
     public DirectExchange direct() {
         return new DirectExchange("pagamento.direct");
     }
 
+    //configura a associacao entre as filas e troca de topicos
     private static class ReceiverConfig {
 
+        //cria e retorna fila anonimas
         @Bean
         public Queue autoDeleteQueue1() {
             return new AnonymousQueue();
@@ -40,7 +44,8 @@ public class PagamentoConfig {
         public Queue autoDeleteQueue3() {
             return new AnonymousQueue();
         }
-
+        
+        //rotea a mensagens para filas com base aos roteamento especificado
         @Bean
         public Binding binding1a(TopicExchange topic,
                                  Queue autoDeleteQueue1) {
@@ -48,7 +53,7 @@ public class PagamentoConfig {
                     .to(topic)
                     .with("PIX.*");
         }
-
+            
         @Bean
         public Binding binding2a(TopicExchange topic,
                                  Queue autoDeleteQueue2) {
@@ -80,6 +85,7 @@ public class PagamentoConfig {
                     .with("CARTAO_CREDITO.SANTANDER");
         }
 
+        //envia mensagens de pagamento
         @Bean
         public PagamentoReceiver receiver() {
             return new PagamentoReceiver();
